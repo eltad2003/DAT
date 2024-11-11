@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .content {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <!--header-->
+    <div th:insert="header::header"></div>
+
+    <div class="container mt-5 content">
+        <h2 class="text-center" style="color: #FF4500; font-weight: 700">Shopping Cart</h2>
+        <h2 th:text="${cart.id}"></h2>
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item: ${cart.items}">
+                        <td th:text="${item.name} +' '+ ${item.id}">Product 1</td>
+                        <td>
+                            <input class="form-control" th:value="${item.quantity}" min="1" readonly>
+                        </td>
+                        <td th:text="${item.price}">$10.00</td>
+                        <td>
+                            <form th:action="@{/cart/remove/{itemId}(itemId=${item.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Cart Summary</h5>
+                        <p class="card-text" th:text="${cart.totalPrice}">Total: <span id="cart-total">$55.00</span></p>
+                        <a href="/checkout" class="btn btn-primary btn-block" style="background: #FF4500;border-color: #FF4500">Proceed to Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:insert="footer::footer"></div>
+</div>
+</body>
+</html>
