@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Your Orders</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:insert="header :: header"></div>
+<div class="container mt-5" >
+  <h2 class="mb-4">Your Orders</h2>
+  <table class="table table-striped" >
+    <thead style="background: #FF4500;border-color: #FF4500">
+    <tr >
+      <th>Order ID</th>
+      <th>Date</th>
+      <th>Total Price</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="order : ${orders}">
+      <td th:text="${order.id}"></td>
+      <td th:text="${order.orderDate}"></td>
+
+      <td th:text="${cart.totalPrice}+'$'"></td>
+      <td th:text="${order.status}"></td>
+      <td>
+        <a th:href="@{'/orders/' + ${order.id}}" class="btn btn-primary" style="background: #FF4500;border-color: #FF4500">View Details</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

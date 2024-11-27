@@ -33,19 +33,19 @@
                 <form th:action="@{/order/checkout}" method="post">
                     <div class="form-group">
                         <label >Name</label>
-                        <input type="text" class="form-control" th:value="${customer.name}" required>
+                        <input type="text" class="form-control" th:value="${customerData.name}" required>
                     </div>
                     <div class="form-group">
                         <label>Email</label>
-                        <input type="email" class="form-control" th:value="${customer.email}" required>
+                        <input type="email" class="form-control" th:value="${customerData.email}" required>
                     </div>
                     <div class="form-group">
                         <label >Phone</label>
-                        <input type="text" class="form-control" th:value="${customer.phone}" required>
+                        <input type="text" class="form-control" th:value="${customerData.phone}" required>
                     </div>
                     <div class="form-group">
                         <label >Address</label>
-                        <input type="text" class="form-control" th:value="${customer.address}" required>
+                        <input type="text" class="form-control" th:value="${customerData.address}" required>
                     </div>
                     <div class="form-group">
                         <label for="paymentMethod">Payment Method</label>

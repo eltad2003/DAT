@@ -13,4 +13,16 @@ public class CustomerService {
     public Customer findCustomerById(Long id) {
         return customerRepository.findById(id).get();
     }
+    public Customer findCustomerByUsername(String username) {
+        return customerRepository.findByUsername(username).get();
+    }
+
+    public String registerCustomer(Customer customer) {
+        if (customerRepository.findByUsername(customer.getUsername()).isPresent()) {
+            return "Customer already exists";
+        }
+        customerRepository.save(customer);
+        return "successfully";
+    }
+
 }

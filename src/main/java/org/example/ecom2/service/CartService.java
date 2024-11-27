@@ -1,6 +1,7 @@
 package org.example.ecom2.service;
 
 import org.example.ecom2.model.Cart;
+import org.example.ecom2.model.Customer;
 import org.example.ecom2.model.Item;
 import org.example.ecom2.repository.CartRepository;
 import org.example.ecom2.repository.ItemRepository;
@@ -17,13 +18,18 @@ public class CartService {
     @Autowired
     private ItemRepository itemRepository;
 
-    public Cart getDefaultCart() {
-        // Giả sử bạn có một giỏ hàng mặc định với ID là 1
-        return cartRepository.findById(1L).orElse(null);
+    public Cart getDefaultCartForCustomer(Customer customer) {
+       Cart cart = cartRepository.findByCustomerId(customer.getId());
+       if (cart == null) {
+           cart = new Cart();
+           cart.setCustomer(customer);
+           cart =  cartRepository.save(cart);
+       }
+       return cart;
     }
 
-   public Cart addCart(Long itemId) {
-       Cart cart = getDefaultCart();
+   public Cart addCart(Long itemId, Customer customer) {
+       Cart cart = getDefaultCartForCustomer(customer);
        Optional<Item> itemOptional = itemRepository.findById(itemId);
        if (itemOptional.isPresent()) {
            Item item = itemOptional.get();
@@ -33,8 +39,8 @@ public class CartService {
        return cart;
    }
 
-   public Cart removeCart(Long itemId) {
-        Cart cart = getDefaultCart();
+   public Cart removeCart(Long itemId, Customer customer) {
+        Cart cart = getDefaultCartForCustomer(customer);
         Optional<Item> itemOptional = itemRepository.findById(itemId);
         if (itemOptional.isPresent()) {
             Item item = itemOptional.get();
@@ -44,7 +50,12 @@ public class CartService {
         return cart;
    }
 
-
+   public void clearCart(Cart cart) {
+        if (cart != null || !cart.getItems().isEmpty()) {
+            cart.getItems().clear();
+            cartRepository.save(cart);
+        }
+   }
 
 }
 

@@ -10,7 +10,7 @@
 <div th:insert="header::header"></div>
 <div class="wrapper">
     <div class="review-container content">
-        <h2>Đánh giá đơn hàng của  <span th:text="${customer.name}">Tên người dùng</span></h2>
+        <h2>Đánh giá đơn hàng của  <span th:text="${customerData.name}">Tên người dùng</span></h2>
 
         <section class="rating-section">
             <h3>Đánh giá</h3>
@@ -29,7 +29,7 @@
 
         <section class="comment-section">
             <h3>Bình luận</h3>
-            <form  method="post" th:action="@{/{customerId}/review/comment(customerId=${customer.id})}">
+            <form  method="post" th:action="@{/{customerId}/review/comment(customerId=${customerData.id})}">
                 <textarea name="content" rows="4" placeholder="Viết bình luận của bạn..." required></textarea>
                 <button type="submit">Gửi bình luận</button>
             </form>
@@ -38,7 +38,7 @@
             <section class="display-comments">
                 <h3>Các bình luận</h3>
                 <div th:each="comment : ${comments}">
-                    <p><strong th:text="${customer.name}">Tên người dùng</strong>: <span th:text="${comment.content}">Nội dung bình luận</span></p>
+                    <p><strong th:text="${customerData.name}">Tên người dùng</strong>: <span th:text="${comment.content}">Nội dung bình luận</span></p>
 <!--                    <p><small th:text="${#dates.format(comment.createdAt, 'dd-MM-yyyy HH:mm')}">Ngày bình luận</small></p>-->
                 </div>
             </section>

@@ -1,11 +1,13 @@
 package org.example.ecom2.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.example.ecom2.model.Cart;
 import org.example.ecom2.model.Comment;
 import org.example.ecom2.model.Customer;
+import org.example.ecom2.model.Orders;
 import org.example.ecom2.service.CartService;
 import org.example.ecom2.service.CommentService;
-import org.example.ecom2.service.CustomerService;
+import org.example.ecom2.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,34 +25,85 @@ public class OrderController {
     private CartService cartService;
 
     @Autowired
+    private OrderService orderService;
+
+    @Autowired
     private CommentService commentService;
 
 
     @GetMapping("/checkout")
-    public String checkoutPage(Model model) {
-        Cart cart = cartService.getDefaultCart();
-        Customer customer = cart.getCustomer();
+    public String checkoutPage(Model model, HttpSession session) {
+        Customer customer = (Customer) session.getAttribute("customerData");
+        if (customer == null) {
+            return "redirect:/login";
+        }
+        Cart cart = cartService.getDefaultCartForCustomer(customer);
         model.addAttribute("cart", cart);
-        model.addAttribute("customer", customer);
-        return "checkout"; // Trả về trang hiển thị thông tin mua hàng
+        model.addAttribute("customerData", customer);
+        return "checkout";
     }
-
+    /**
+     * Xử lý đặt hàng khi checkout.
+     */
     @PostMapping("/order/checkout")
-    public String checkout(@RequestParam("paymentMethod") String paymentMethod, Model model ) {
-        Cart cart = cartService.getDefaultCart();
-        Customer customer = cart.getCustomer();
-        model.addAttribute("paymentMethod", paymentMethod);
-        model.addAttribute("customer", customer);
+    public String checkout(Model model, HttpSession session ) {
+        Customer customer = (Customer) session.getAttribute("customerData");
+        if (customer == null) {
+            return "redirect:/login";
+        }
+        Cart cart = cartService.getDefaultCartForCustomer(customer);
+        if (cart.getItems().isEmpty()) {
+            model.addAttribute("errorMessage", "No items in your cart.");
+            return "redirect:/cart";
+        }
+        Orders order = orderService.createOrderFromCart(cart);
+//        cartService.clearCart(cart);
+
+        model.addAttribute("customerData", customer);
+        model.addAttribute("order", order);
         return "order_success";
     }
 
     @GetMapping("/{customerId}/review")
-    public String review(@PathVariable("customerId") Long customerId, Model model) {
-        Cart cart = cartService.getDefaultCart();
-        Customer customer = cart.getCustomer();
+    public String review(@PathVariable("customerId") Long customerId, Model model, HttpSession session) {
+        Customer sessionCustomer = (Customer) session.getAttribute("customerData");
+        if (sessionCustomer == null) {
+            return "redirect:/login";
+        }
         List<Comment> comments = commentService.getCommentsByCustomerId(customerId);
         model.addAttribute("comments", comments);
-        model.addAttribute("customer", customer);
+        model.addAttribute("customerData", sessionCustomer);
         return "review";
     }
+    @GetMapping("/orders")
+    public String listOrders(HttpSession session, Model model) {
+        Customer customer = (Customer) session.getAttribute("customerData");
+        if (customer == null) {
+            return "redirect:/login";
+        }
+        List<Orders> orders = orderService.getOrdersByCustomerId(customer.getId());
+        Cart cart = cartService.getDefaultCartForCustomer(customer);
+        model.addAttribute("orders", orders);
+        model.addAttribute("customerData", customer);
+        model.addAttribute("cart", cart);
+        return "list_orders";
+    }
+    @GetMapping("orders/{orderId}")
+    public String viewOrderDetails(@PathVariable Long orderId, Model model, HttpSession session) {
+        Customer customer = (Customer) session.getAttribute("customerData");
+        if (customer == null) {
+            return "redirect:/login";
+        }
+        Orders order = orderService.getOrderDetails(orderId);
+        if (order == null) {
+            return "redirect:/orders";
+        }
+
+        Cart cart = cartService.getDefaultCartForCustomer(customer);
+        model.addAttribute("order", order);
+//        model.addAttribute("cart", cart);
+        model.addAttribute("customerData", customer);
+        return "detail_order";
+    }
+
 }

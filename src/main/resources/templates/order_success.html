@@ -12,8 +12,8 @@
 <div class="wrapper">
     <div class="content">
         <h2>Cảm ơn bạn đã đặt hàng!</h2>
-        <p>Phương thức thanh toán: <span th:text="${paymentMethod}">Phương thức thanh toán</span></p>
-        <a th:href="@{/{customerId}/review(customerId=${customer.id})}">Đánh giá ngay</a>
+        <p>Phương thức thanh toán: <span th:text="${order.payment}">Phương thức thanh toán</span></p>
+        <a th:href="@{/{customerId}/review(customerId=${customerData.id})}">Đánh giá ngay</a>
     </div>
     <div th:insert="footer::footer" ></div>
 </div>
